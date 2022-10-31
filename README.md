@@ -75,6 +75,7 @@ int main(int argc, char **argv)
     puts(text);
     mocr_free(text);
     mocr_destroy(ctx);
+    return 0;
 }
 ```
 
@@ -90,6 +91,7 @@ int main(int argc, char **argv)
     mocr::model mod;
     if (!mod) return 1;
     std::cout << mod.read(argv[1]) << std::endl;
+    return 0;
 }
 ```
 
