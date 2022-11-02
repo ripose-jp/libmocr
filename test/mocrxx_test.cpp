@@ -27,49 +27,49 @@
 
 #define KHA_WHITE_MODEL ("kha-white/manga-ocr-base")
 
-TEST(init_test, basic)
+TEST(MocrxxInitTest, Basic)
 {
     mocr::model model;
-    ASSERT_TRUE(model.valid());
-    ASSERT_FALSE(!model);
+    EXPECT_TRUE(model.valid());
+    EXPECT_FALSE(!model);
 }
 
-TEST(init_test, cpu)
+TEST(MocrxxInitTest, Cpu)
 {
     mocr::model model(KHA_WHITE_MODEL, true);
-    ASSERT_TRUE(model.valid());
-    ASSERT_FALSE(!model);
+    EXPECT_TRUE(model.valid());
+    EXPECT_FALSE(!model);
 }
 
-TEST(init_test, model_not_found)
+TEST(MocrxxInitTest, ModelNotFound)
 {
     mocr::model model("/model/does/not/exist");
-    ASSERT_FALSE(model.valid());
-    ASSERT_TRUE(!model);
+    EXPECT_FALSE(model.valid());
+    EXPECT_TRUE(!model);
 }
 
-TEST(init_test, basic_std_string)
+TEST(MocrxxInitTest, BasicStdString)
 {
     mocr::model model(std::string(KHA_WHITE_MODEL));
-    ASSERT_TRUE(model.valid());
-    ASSERT_FALSE(!model);
+    EXPECT_TRUE(model.valid());
+    EXPECT_FALSE(!model);
 }
 
-TEST(init_test, basic_std_string_cpu)
+TEST(MocrxxInitTest, BasicStdStringCpu)
 {
     mocr::model model(std::string(KHA_WHITE_MODEL), true);
-    ASSERT_TRUE(model.valid());
-    ASSERT_FALSE(!model);
+    EXPECT_TRUE(model.valid());
+    EXPECT_FALSE(!model);
 }
 
-TEST(init_test, model_std_string_not_found)
+TEST(MocrxxInitTest, ModelStdStringNotFound)
 {
     mocr::model model(std::string("/model/does/not/exist"));
-    ASSERT_FALSE(model.valid());
-    ASSERT_TRUE(!model);
+    EXPECT_FALSE(model.valid());
+    EXPECT_TRUE(!model);
 }
 
-class read_file_test : public ::testing::Test
+class MocrxxReadFileTest : public ::testing::Test
 {
 protected:
     void SetUp() override
@@ -79,73 +79,73 @@ protected:
 
     void test_file(const char *path, const char *expected_text)
     {
-        ASSERT_STREQ(ctx.read(path).c_str(), expected_text);
+        EXPECT_STREQ(ctx.read(path).c_str(), expected_text);
     }
 
     mocr::model ctx;
 };
 
-TEST_F(read_file_test, basic0)
+TEST_F(MocrxxReadFileTest, Basic0)
 {
     test_file("data/00.jpg", "素直にあやまるしか");
 }
 
-TEST_F(read_file_test, basic1)
+TEST_F(MocrxxReadFileTest, Basic1)
 {
     test_file("data/01.jpg", "立川で見た〝穴〟の下の巨大な眼は：");
 }
 
-TEST_F(read_file_test, basic2)
+TEST_F(MocrxxReadFileTest, Basic2)
 {
     test_file("data/02.jpg", "実戦剣術も一流です");
 }
 
-TEST_F(read_file_test, basic3)
+TEST_F(MocrxxReadFileTest, Basic3)
 {
     test_file("data/03.jpg", "第３０話重苦しい闇の奥で静かに呼吸づきながら");
 }
 
-TEST_F(read_file_test, basic4)
+TEST_F(MocrxxReadFileTest, Basic4)
 {
     test_file("data/04.jpg", "よかったじゃないわよ！何逃げてるのよ！！早くあいつを退治してよ！");
 }
 
-TEST_F(read_file_test, basic5)
+TEST_F(MocrxxReadFileTest, Basic5)
 {
     test_file("data/05.jpg", "ぎゃっ");
 }
 
-TEST_F(read_file_test, basic6)
+TEST_F(MocrxxReadFileTest, Basic6)
 {
     test_file("data/06.jpg", "ピンポーーン");
 }
 
-TEST_F(read_file_test, basic7)
+TEST_F(MocrxxReadFileTest, Basic7)
 {
     test_file("data/07.jpg", "ＬＩＮＫ！私達７人の力でガノンの塔の結界をやぶります");
 }
 
-TEST_F(read_file_test, basic8)
+TEST_F(MocrxxReadFileTest, Basic8)
 {
     test_file("data/08.jpg", "ファイアパンチ");
 }
 
-TEST_F(read_file_test, basic9)
+TEST_F(MocrxxReadFileTest, Basic9)
 {
     test_file("data/09.jpg", "少し黙っている");
 }
 
-TEST_F(read_file_test, basic10)
+TEST_F(MocrxxReadFileTest, Basic10)
 {
     test_file("data/10.jpg", "わかるかな〜？");
 }
 
-TEST_F(read_file_test, basic11)
+TEST_F(MocrxxReadFileTest, Basic11)
 {
     test_file("data/11.jpg", "警察にも先生にも町中の人達に！！");
 }
 
-TEST_F(read_file_test, basic_multi)
+TEST_F(MocrxxReadFileTest, BasicMulti)
 {
     test_file("data/00.jpg", "素直にあやまるしか");
     test_file("data/01.jpg", "立川で見た〝穴〟の下の巨大な眼は：");
@@ -153,23 +153,23 @@ TEST_F(read_file_test, basic_multi)
     test_file("data/11.jpg", "警察にも先生にも町中の人達に！！");
 }
 
-TEST_F(read_file_test, missing_file)
+TEST_F(MocrxxReadFileTest, MissingFile)
 {
     std::string text = ctx.read("/file/does/not/exist.jpg");
-    ASSERT_TRUE(text.empty());
+    EXPECT_TRUE(text.empty());
 }
 
-TEST_F(read_file_test, basic0_std_string)
+TEST_F(MocrxxReadFileTest, Basic0StdString)
 {
-    ASSERT_STREQ(ctx.read(std::string("data/00.jpg")).c_str(), "素直にあやまるしか");
+    EXPECT_STREQ(ctx.read(std::string("data/00.jpg")).c_str(), "素直にあやまるしか");
 }
 
-TEST_F(read_file_test, missing_file_std_string)
+TEST_F(MocrxxReadFileTest, MissingFileStdString)
 {
-    ASSERT_TRUE(ctx.read(std::string("/file/does/not/exist")).empty());
+    EXPECT_TRUE(ctx.read(std::string("/file/does/not/exist")).empty());
 }
 
-class read_test : public ::testing::Test
+class MocrxxReadTest : public ::testing::Test
 {
 protected:
     void SetUp() override
@@ -181,9 +181,10 @@ protected:
     {
         int width, height, channels;
         stbi_uc *data = stbi_load(path, &width, &height, &channels, 3);
+        ASSERT_NE(data, nullptr);
 
         std::string text = ctx.read(data, width, height, mocr::mode::RGB);
-        ASSERT_STREQ(text.c_str(), expected_text);
+        EXPECT_STREQ(text.c_str(), expected_text);
 
         stbi_image_free(data);
     }
@@ -191,67 +192,67 @@ protected:
     mocr::model ctx;
 };
 
-TEST_F(read_test, basic0)
+TEST_F(MocrxxReadTest, Basic0)
 {
     test_file("data/00.jpg", "素直にあやまるしか");
 }
 
-TEST_F(read_test, basic1)
+TEST_F(MocrxxReadTest, Basic1)
 {
     test_file("data/01.jpg", "立川で見た、穴への下の巨大な眼は．．．");
 }
 
-TEST_F(read_test, basic2)
+TEST_F(MocrxxReadTest, Basic2)
 {
     test_file("data/02.jpg", "実戦剣術も一流です");
 }
 
-TEST_F(read_test, basic3)
+TEST_F(MocrxxReadTest, Basic3)
 {
     test_file("data/03.jpg", "第３０話重苦しい闇の奥で静かに呼吸づきながら");
 }
 
-TEST_F(read_test, basic4)
+TEST_F(MocrxxReadTest, Basic4)
 {
     test_file("data/04.jpg", "よかったじゃないわよ！何逃げてるのよ！！早くあいつを退治してよ！");
 }
 
-TEST_F(read_test, basic5)
+TEST_F(MocrxxReadTest, Basic5)
 {
     test_file("data/05.jpg", "ぎゃっ");
 }
 
-TEST_F(read_test, basic6)
+TEST_F(MocrxxReadTest, Basic6)
 {
     test_file("data/06.jpg", "ピンポーーン");
 }
 
-TEST_F(read_test, basic7)
+TEST_F(MocrxxReadTest, Basic7)
 {
     test_file("data/07.jpg", "ＬＩＮＫ！私達７人の力でガノンの塔の結界をやぶります");
 }
 
-TEST_F(read_test, basic8)
+TEST_F(MocrxxReadTest, Basic8)
 {
     test_file("data/08.jpg", "ファイアパンチ");
 }
 
-TEST_F(read_test, basic9)
+TEST_F(MocrxxReadTest, Basic9)
 {
     test_file("data/09.jpg", "少し黙っている");
 }
 
-TEST_F(read_test, basic10)
+TEST_F(MocrxxReadTest, Basic10)
 {
     test_file("data/10.jpg", "わかるかな〜？");
 }
 
-TEST_F(read_test, basic11)
+TEST_F(MocrxxReadTest, Basic11)
 {
     test_file("data/11.jpg", "警察にも先生にも町中の人達に！！");
 }
 
-TEST_F(read_test, basic_multi)
+TEST_F(MocrxxReadTest, BasicMulti)
 {
     test_file("data/00.jpg", "素直にあやまるしか");
     test_file("data/01.jpg", "立川で見た、穴への下の巨大な眼は．．．");
