@@ -39,4 +39,4 @@ jobs:
 
     - name: Test
       working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}} -j 2
+      run: ctest --output-on-failure -C ${{env.BUILD_TYPE}} -j 2
