@@ -120,8 +120,10 @@ cmake -DEXACT_PYTHON_VERSION=3.10 ..
 
 This bug can be reproduced by calling `mocr_init()` for the C API or constructor
 for the C++ API in a pthread on macOS.
-The call stack for this error is deep within OpenBLAS, so I doubt I can fix it.
-The only workaround is to call `mocr_init()` from the main thread on macOS.
+This happens due to macOS's default pthread stack size of 512KB being too small
+to initialize a context.
+This can be fixed by using `pthread_attr_setstacksize` to set the stack size to
+a larger value such as 8MB.
 
 # Acknowledgements
 

@@ -27,6 +27,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#ifdef __APPLE__
+#include <pthread.h>
+
+#define APPLE_STACK_SIZE    ((size_t)8388608)
+#endif // __APPLE__
+
 #define KHA_WHITE_MODEL ("kha-white/manga-ocr-base")
 
 TEST(MocrxxInitTest, Basic)
@@ -81,7 +87,7 @@ TEST(MocrxxInitTest, Multi)
     EXPECT_FALSE(!model2);
 }
 
-/* This test only fails on macOS, I suspect due to a bug in OpenBLAS */
+/* This test will fail due to the default 512KB stack size on macOS */
 #if !defined(__APPLE__)
 TEST(MocrxxInitTest, MultiThreadInit)
 {
@@ -89,6 +95,30 @@ TEST(MocrxxInitTest, MultiThreadInit)
         std::launch::async,
         [] () -> mocr::model * { return new mocr::model; }
     ).get();
+    ASSERT_NE(model, nullptr);
+    EXPECT_TRUE(model->valid());
+    EXPECT_FALSE(!*model);
+    delete model;
+}
+#endif
+
+#ifdef __APPLE__
+static void *init_mocr_worker(void *)
+{
+    return new mocr::model;
+}
+
+TEST(MocrxxInitTest, MultiThreadInit)
+{
+    pthread_attr_t attrs;
+    ASSERT_EQ(pthread_attr_init(&attrs), 0);
+    ASSERT_EQ(pthread_attr_setstacksize(&attrs, APPLE_STACK_SIZE), 0);
+    pthread_t worker;
+    ASSERT_EQ(pthread_create(&worker, &attrs, init_mocr_worker, NULL), 0);
+    ASSERT_EQ(pthread_attr_destroy(&attrs), 0);
+
+    mocr::model *model = nullptr;
+    ASSERT_EQ(pthread_join(worker, reinterpret_cast<void **>(&model)), 0);
     ASSERT_NE(model, nullptr);
     EXPECT_TRUE(model->valid());
     EXPECT_FALSE(!*model);
