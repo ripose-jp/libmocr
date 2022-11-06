@@ -20,10 +20,12 @@
 
 #include <gtest/gtest.h>
 
+#include "mocr++.h"
+
+#include <future>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
-#include "mocr++.h"
 
 #define KHA_WHITE_MODEL ("kha-white/manga-ocr-base")
 
@@ -69,6 +71,31 @@ TEST(MocrxxInitTest, ModelStdStringNotFound)
     EXPECT_TRUE(!model);
 }
 
+TEST(MocrxxInitTest, Multi)
+{
+    mocr::model model1;
+    mocr::model model2;
+    EXPECT_TRUE(model1.valid());
+    EXPECT_FALSE(!model1);
+    EXPECT_TRUE(model2.valid());
+    EXPECT_FALSE(!model2);
+}
+
+/* This test only fails on macOS, I suspect due to a bug in OpenBLAS */
+#if !defined(__APPLE__)
+TEST(MocrxxInitTest, MultiThreadInit)
+{
+    mocr::model *model = std::async(
+        std::launch::async,
+        [] () -> mocr::model * { return new mocr::model; }
+    ).get();
+    ASSERT_NE(model, nullptr);
+    EXPECT_TRUE(model->valid());
+    EXPECT_FALSE(!*model);
+    delete model;
+}
+#endif
+
 class MocrxxReadFileTest : public ::testing::Test
 {
 protected:
@@ -80,6 +107,14 @@ protected:
     void test_file(const char *path, const char *expected_text)
     {
         EXPECT_STREQ(ctx.read(path).c_str(), expected_text);
+    }
+
+    std::future<void> test_file_async(const char *path, const char *expected_text)
+    {
+        return std::async(
+            std::launch::async,
+            &MocrxxReadFileTest::test_file, this, path, expected_text
+        );
     }
 
     mocr::model ctx;
@@ -153,6 +188,28 @@ TEST_F(MocrxxReadFileTest, BasicMulti)
     test_file("data/11.jpg", "警察にも先生にも町中の人達に！！");
 }
 
+TEST_F(MocrxxReadFileTest, Basic0Async)
+{
+    test_file_async("data/00.jpg", "素直にあやまるしか").wait();
+}
+
+TEST_F(MocrxxReadFileTest, BasicMultiAsync)
+{
+    std::future<void> basic0 =
+        test_file_async("data/00.jpg", "素直にあやまるしか");
+    std::future<void> basic1 =
+        test_file_async("data/01.jpg", "立川で見た〝穴〟の下の巨大な眼は：");
+    std::future<void> basic2 =
+        test_file_async("data/02.jpg", "実戦剣術も一流です");
+    std::future<void> basic3 =
+        test_file_async("data/11.jpg", "警察にも先生にも町中の人達に！！");
+
+    basic0.wait();
+    basic1.wait();
+    basic2.wait();
+    basic3.wait();
+}
+
 TEST_F(MocrxxReadFileTest, MissingFile)
 {
     std::string text = ctx.read("/file/does/not/exist.jpg");
@@ -187,6 +244,14 @@ protected:
         EXPECT_STREQ(text.c_str(), expected_text);
 
         stbi_image_free(data);
+    }
+
+    std::future<void> test_file_async(const char *path, const char *expected)
+    {
+        return std::async(
+            std::launch::async,
+            &MocrxxReadTest::test_file, this, path, expected
+        );
     }
 
     mocr::model ctx;
@@ -258,4 +323,26 @@ TEST_F(MocrxxReadTest, BasicMulti)
     test_file("data/01.jpg", "立川で見た、穴への下の巨大な眼は．．．");
     test_file("data/02.jpg", "実戦剣術も一流です");
     test_file("data/11.jpg", "警察にも先生にも町中の人達に！！");
+}
+
+TEST_F(MocrxxReadTest, Basic0Async)
+{
+    test_file_async("data/00.jpg", "素直にあやまるしか").wait();
+}
+
+TEST_F(MocrxxReadTest, BasicMultiAsync)
+{
+    std::future<void> basic0 =
+        test_file_async("data/00.jpg", "素直にあやまるしか");
+    std::future<void> basic1 =
+        test_file_async("data/01.jpg", "立川で見た、穴への下の巨大な眼は．．．");
+    std::future<void> basic2 =
+        test_file_async("data/02.jpg", "実戦剣術も一流です");
+    std::future<void> basic3 =
+        test_file_async("data/11.jpg", "警察にも先生にも町中の人達に！！");
+
+    basic0.wait();
+    basic1.wait();
+    basic2.wait();
+    basic3.wait();
 }

@@ -45,6 +45,16 @@ TEST(MocrInitTest, ModelNotFound)
     ASSERT_EQ(ctx, nullptr);
 }
 
+TEST(MocrInitTest, Multi)
+{
+    mocr_ctx *ctx1 = mocr_init(DEFAULT_MODEL, 0);
+    ASSERT_NE(ctx1, nullptr);
+    mocr_ctx *ctx2 = mocr_init(DEFAULT_MODEL, 0);
+    ASSERT_NE(ctx2, nullptr);
+    EXPECT_EQ(mocr_destroy(ctx1), 0);
+    EXPECT_EQ(mocr_destroy(ctx2), 0);
+}
+
 TEST(MocrDestroyTest, Vaild)
 {
     mocr_ctx *ctx = mocr_init(DEFAULT_MODEL, 0);

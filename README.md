@@ -116,6 +116,13 @@ This can be done by running in the build directory:
 cmake -DEXACT_PYTHON_VERSION=3.10 ..
 ```
 
+## EXC_BAD_ACCESS on macOS
+
+This bug can be reproduced by calling `mocr_init()` for the C API or constructor
+for the C++ API in a pthread on macOS.
+The call stack for this error is deep within OpenBLAS, so I doubt I can fix it.
+The only workaround is to call `mocr_init()` from the main thread on macOS.
+
 # Acknowledgements
 
 Thanks to [kha-white](https://github.com/kha-white) and the other mangaocr

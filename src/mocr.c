@@ -26,6 +26,9 @@
 
 #include <stdlib.h>
 
+/* The thread state for the main thread */
+PyThreadState *g_mainThreadState;
+
 /**
  * @brief The definition of the mangaocr context object
  */
@@ -160,6 +163,10 @@ mocr_ctx *mocr_init(const char *model, int force_cpu)
 
     /* Deal with state */
     Py_Initialize();
+    if (PyGILState_Check())
+    {
+        g_mainThreadState = PyEval_SaveThread();
+    }
     gstate = PyGILState_Ensure();
 
     ctx = calloc(1, sizeof(mocr_ctx));
@@ -238,7 +245,9 @@ error:
     Py_XDECREF(module_pil_image);
     Py_XDECREF(module_pil);
     Py_XDECREF(args);
+
     PyGILState_Release(gstate);
+
     mocr_destroy(ctx);
 
     return NULL;
@@ -249,9 +258,11 @@ int mocr_destroy(mocr_ctx *ctx)
     if (ctx)
     {
         PyGILState_STATE gstate = PyGILState_Ensure();
+
         Py_XDECREF(ctx->obj_mangaocr);
         Py_XDECREF(ctx->func_pil_image_frombytes);
         free(ctx);
+
         PyGILState_Release(gstate);
     }
     return 0;
@@ -308,6 +319,7 @@ char *mocr_read(
 cleanup:
     Py_XDECREF(args);
     Py_XDECREF(image);
+
     PyGILState_Release(gstate);
 
     return text;
@@ -317,6 +329,8 @@ cleanup:
 
 char *mocr_read_file(mocr_ctx *ctx, const char *path)
 {
+    char *text = NULL;
+
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject *args = Py_BuildValue("(s)", path);
@@ -325,11 +339,12 @@ char *mocr_read_file(mocr_ctx *ctx, const char *path)
         PyErr_Print();
         return NULL;
     }
-    char *text = call_read(ctx, args);
+    text = call_read(ctx, args);
     Py_DECREF(args);
     args = NULL;
 
     PyGILState_Release(gstate);
+
     return text;
 }
 
