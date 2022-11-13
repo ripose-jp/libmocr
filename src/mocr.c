@@ -263,6 +263,8 @@ int mocr_destroy(mocr_ctx *ctx)
         Py_XDECREF(ctx->func_pil_image_frombytes);
         free(ctx);
 
+        PyGC_Collect();
+
         PyGILState_Release(gstate);
     }
     return 0;
