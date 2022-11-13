@@ -355,3 +355,14 @@ int mocr_free(void *ptr)
     free(ptr);
     return 0;
 }
+
+int mocr_finalize()
+{
+    if (g_mainThreadState == NULL)
+    {
+        return 0;
+    }
+    PyEval_RestoreThread(g_mainThreadState);
+    g_mainThreadState = NULL;
+    return Py_FinalizeEx();
+}

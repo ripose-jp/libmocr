@@ -149,6 +149,22 @@ private:
     mocr_ctx *m_ctx;
 };
 
+/**
+ * @brief Finalizes the Python state. All models should be destroyed before
+ * calling this method. This method is not thread safe.
+ *
+ * This method should only be called if you know what you are doing. Many
+ * libraries do not play nice with reinitializing Python after a call to
+ * finalize. It is for this reason that you should ONLY call this method if you
+ * are certain another context will not be initialized. Calling this method may
+ * also interfere with other code if Python is embedded elsewhere. You have been
+ * warned.
+ *
+ * @return true if the the state for finalized without error
+ * @return false otherwise
+ */
+bool finalize();
+
 }
 
 #endif // MOCRXX_H

@@ -122,6 +122,21 @@ char *mocr_read_file(mocr_ctx *ctx, const char *path);
  */
 int mocr_free(void *ptr);
 
+/**
+ * @brief Finalizes the Python state. All contexts should be destroyed before
+ * calling this method. This method is not thread safe.
+ *
+ * This method should only be called if you know what you are doing. Many
+ * libraries do not play nice with reinitializing Python after a call to
+ * finalize. It is for this reason that you should ONLY call this method if you
+ * are certain another context will not be initialized. Calling this method may
+ * also interfere with other code if Python is embedded elsewhere. You have been
+ * warned.
+ *
+ * @return 0 on success, nonzero on failure.
+ */
+int mocr_finalize();
+
 #endif // LIBMOCR_H
 
 #ifdef __cplusplus

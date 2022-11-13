@@ -69,6 +69,19 @@ TEST(MocrDestroyTest, Null)
     EXPECT_EQ(mocr_destroy(ctx), 0);
 }
 
+TEST(MocrFinalize, OneInit)
+{
+    mocr_ctx *ctx = mocr_init(DEFAULT_MODEL, 0);
+    ASSERT_NE(ctx, nullptr);
+    EXPECT_EQ(mocr_destroy(ctx), 0);
+    EXPECT_EQ(mocr_finalize(), 0);
+}
+
+TEST(MocrFinalize, NoInit)
+{
+    EXPECT_EQ(mocr_finalize(), 0);
+}
+
 class MocrReadFileTest : public ::testing::Test
 {
 protected:

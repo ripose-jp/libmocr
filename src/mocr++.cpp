@@ -84,3 +84,8 @@ std::string model::read(const std::string &path)
 {
     return read(path.c_str());
 }
+
+bool mocr::finalize()
+{
+    return mocr_finalize() == 0;
+}

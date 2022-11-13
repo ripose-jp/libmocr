@@ -87,6 +87,21 @@ TEST(MocrxxInitTest, Multi)
     EXPECT_FALSE(!model2);
 }
 
+TEST(MocrxxFinalize, Init)
+{
+    {
+        mocr::model model;
+        EXPECT_TRUE(model.valid());
+        EXPECT_FALSE(!model);
+    }
+    EXPECT_TRUE(mocr::finalize());
+}
+
+TEST(MocrxxFinalize, NoInit)
+{
+    EXPECT_TRUE(mocr::finalize());
+}
+
 /* This test will fail due to the default 512KB stack size on macOS */
 #if !defined(__APPLE__)
 TEST(MocrxxInitTest, MultiThreadInit)
