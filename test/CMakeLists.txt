@@ -1,8 +1,6 @@
-# Set the standard for tests
-set(CMAKE_CXX_STANDARD 20)
-
 # Boilerplate for importing Google Test
 include(FetchContent)
+
 FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/3026483ae575e2de942db5e760cf95e973308dd5.zip
@@ -26,10 +24,12 @@ add_executable(
     mocr_test.cpp
 )
 target_include_directories(mocr_test PRIVATE ${TEST_INCLUDE_DIRS})
+target_compile_features(mocr_test PUBLIC cxx_std_20)
+target_compile_options(mocr_test PRIVATE ${MOCR_COMPILE_FLAGS})
 target_link_libraries(
     mocr_test
-    ${LIBRARY_NAME_C}
-    GTest::gtest_main
+    PRIVATE ${MOCR_LIBRARY_NAME_C}
+    PRIVATE GTest::gtest_main
 )
 gtest_discover_tests(
     mocr_test
@@ -41,10 +41,12 @@ add_executable(
     mocrxx_test.cpp
 )
 target_include_directories(mocrxx_test PRIVATE ${TEST_INCLUDE_DIRS})
+target_compile_features(mocrxx_test PUBLIC cxx_std_20)
+target_compile_options(mocrxx_test PRIVATE ${MOCR_COMPILE_FLAGS})
 target_link_libraries(
     mocrxx_test
-    ${LIBRARY_NAME_CXX}
-    GTest::gtest_main
+    PRIVATE ${MOCR_LIBRARY_NAME_CXX}
+    PRIVATE GTest::gtest_main
 )
 gtest_discover_tests(
     mocrxx_test
