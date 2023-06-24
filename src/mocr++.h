@@ -163,7 +163,7 @@ private:
  * @return true if the the state for finalized without error
  * @return false otherwise
  */
-bool finalize();
+bool finalize(void);
 
 }
 

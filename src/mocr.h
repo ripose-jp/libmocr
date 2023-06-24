@@ -135,7 +135,7 @@ int mocr_free(void *ptr);
  *
  * @return 0 on success, nonzero on failure.
  */
-int mocr_finalize();
+int mocr_finalize(void);
 
 #endif // LIBMOCR_H
 

@@ -356,7 +356,7 @@ int mocr_free(void *ptr)
     return 0;
 }
 
-int mocr_finalize()
+int mocr_finalize(void)
 {
     if (g_mainThreadState == NULL)
     {
