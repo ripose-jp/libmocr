@@ -135,3 +135,17 @@ if (BUILD_TESTING)
     enable_testing()
     add_subdirectory(test)
 endif()
+
+# pkg-config support
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+set(PKGCONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+configure_file(
+    "${PROJECT_SOURCE_DIR}/mocr.pc.in"
+    "${CMAKE_BINARY_DIR}/mocr.pc"
+    @ONLY
+)
+install(
+    FILES "${CMAKE_BINARY_DIR}/mocr.pc"
+    DESTINATION "${PKGCONFIG_INSTALL_DIR}"
+)
